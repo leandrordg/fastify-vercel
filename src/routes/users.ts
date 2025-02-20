@@ -70,6 +70,20 @@ export async function usersRoute(app: FastifyInstance) {
     const { id } = request.params as { id: string };
     const { name, email } = request.body as { name: string; email: string };
 
+    const userExists = await prisma.user.findFirst({
+      where: {
+        email,
+        NOT: {
+          id,
+        },
+      },
+    });
+
+    if (userExists)
+      return reply
+        .status(400)
+        .send({ success: false, data: {}, message: "User already exists" });
+
     const user = await prisma.user.update({
       where: {
         id,
@@ -90,6 +104,17 @@ export async function usersRoute(app: FastifyInstance) {
   // DELETE /users/:id
   app.delete("/:id", async (request, reply) => {
     const { id } = request.params as { id: string };
+
+    const userExists = await prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!userExists)
+      return reply
+        .status(404)
+        .send({ success: false, data: {}, message: "User not found" });
 
     await prisma.user.delete({
       where: {
