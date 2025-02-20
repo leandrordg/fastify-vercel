@@ -58,9 +58,11 @@ export async function usersRoute(app: FastifyInstance) {
         .send({ success: false, data: {}, message: "User not found" });
     }
 
-    return reply
-      .status(200)
-      .send({ success: true, data: user, message: "User found successfully" });
+    return reply.status(200).send({
+      success: true,
+      data: user,
+      message: "User found successfully",
+    });
   });
 
   // PUT /users/:id
